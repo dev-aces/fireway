@@ -1,12 +1,13 @@
 # fireway
-A schema migration tool for firestore heavily inspired by [flyway](https://flywaydb.org/)
+
+A schema migration tool for firestore.
 
 ## Install
 
 ```bash
-yarn global add fireway
+npm i fireway
 
-# or 
+# or
 
 npx fireway
 ```
@@ -16,6 +17,7 @@ npx fireway
 In order to fireway be able to connect to firestore you need to set up the environment variable `GOOGLE_APPLICATION_CREDENTIALS` with service account file path.
 
 Example:
+
 ```bash
 export GOOGLE_APPLICATION_CREDENTIALS="path/to/firestore-service-account.json"
 ```
@@ -43,6 +45,7 @@ Examples
 ```
 
 ### `fireway migrate`
+
 ```bash
 Description
   Migrates schema to the latest version
@@ -53,8 +56,7 @@ Usage
 Options
   --path         Path to migration files  (default ./migrations)
   --projectId    Target firebase project
-  --dryrun       Simulates changes
-  --forceWait    Forces waiting for migrations that do not strictly manage async calls
+  --dryRun       Simulates changes
   --require      Requires a module before executing
   -h, --help     Displays this message
 
@@ -62,8 +64,7 @@ Examples
   $ fireway migrate
   $ fireway migrate --path=./my-migrations
   $ fireway migrate --projectId=my-staging-id
-  $ fireway migrate --dryrun
-  $ fireway migrate --forceWait
+  $ fireway migrate --dryRun
   $ fireway --require="ts-node/register" migrate
 ```
 
@@ -73,9 +74,12 @@ Migration file name format: `v[semver]__[description].js`
 
 ```js
 // each script gets a pre-configured firestore admin instance
-// possible params: app, firestore, FieldValue, FieldPath, Timestamp, dryrun
-module.exports.migrate = async ({firestore, FieldValue}) => {
-    await firestore.collection('name').add({key: FieldValue.serverTimestamp()});
+// possible params: app, firestore, dryRun
+
+const { FieldValue } = require('firebase-admin/firestore');
+
+module.exports.migrate = async ({ firestore }) => {
+  await firestore.collection('name').add({ key: FieldValue.serverTimestamp() });
 };
 ```
 
@@ -98,17 +102,19 @@ For type checking and Intellisense, there are two options:
      }
    }
    ```
+
 3. Create a migration
 
    ```ts
-    // ./migrations/v0.0.1__typescript-example.ts
+   // ./migrations/v0.0.1__typescript-example.ts
 
-    import { MigrateOptions } from 'fireway';
+   import { IMigrationFunctionsArguments } from 'fireway';
 
-    export async function migrate({firestore} : MigrateOptions) {
-        await firestore.collection('data').doc('one').set({key: 'value'});
-    };
+   export async function migrate({ firestore }: IMigrationFunctionsArguments) {
+     await firestore.collection('data').doc('one').set({ key: 'value' });
+   }
    ```
+
 4. Run `fireway migrate` with the `require` option
 
    ```sh
@@ -121,20 +127,20 @@ Alternatively, you can use [JSDoc](https://jsdoc.app/) for Intellisense
 
 ```js
 /** @param { import('fireway').MigrateOptions } */
-module.exports.migrate = async ({firestore}) => {
-    // Intellisense is enabled
+module.exports.migrate = async ({ firestore }) => {
+  // Intellisense is enabled
 };
 ```
 
 ## Running locally
 
-Typically, `fireway` expects a `--projectId` option that lets you specify the Firebase project associated with your Firestore instance against which it performs migrations. 
-However, most likely you'll want to test your migration scripts _locally_ first before running them against your actual (presumably, production) instances. 
+Typically, `fireway` expects a `--projectId` option that lets you specify the Firebase project associated with your Firestore instance against which it performs migrations.
+However, most likely you'll want to test your migration scripts _locally_ first before running them against your actual (presumably, production) instances.
 If you are using the [Firestore emulator](https://firebase.google.com/docs/emulator-suite/connect_firestore), define the FIRESTORE_EMULATOR_HOST environment variable, e.g.:
 
 `export FIRESTORE_EMULATOR_HOST="localhost:8080"`
 
-The firestore node library will connect to your local instance. This way, you don't need a project ID and migrations will be run against your emulator instance. This works since `fireway` is built on the [firestore node library](https://www.npmjs.com/package/@google-cloud/firestore). 
+The firestore node library will connect to your local instance. This way, you don't need a project ID and migrations will be run against your emulator instance. This works since `fireway` is built on the [firestore node library](https://www.npmjs.com/package/@google-cloud/firestore).
 
 ## Migration logic
 
@@ -145,10 +151,10 @@ The firestore node library will connect to your local instance. This way, you do
 
 ## Migration results
 
-Migration results are stored in the `fireway` collection in `firestore`
+Migration results are stored in the `migrations` collection in `firestore`
 
 ```js
-// /fireway/3-0.0.1-example
+// /migrations/3-0.0.1-example
 
 {
   checksum: 'fdfe6a55a7c97a4346cb59871b4ce97c',
@@ -168,12 +174,16 @@ Migration results are stored in the `fireway` collection in `firestore`
 
 ```bash
 # To install packages and firestore emulator
-$ yarn
-$ yarn setup
+$ npm install
+$ npm setup
 
 # To run tests
-$ yarn test
+$ npm test
 ```
+
+## History
+
+Forked from https://github.com/kevlened/fireway[https://github.com/kevlened/fireway] and heavily inspired by [flyway](https://flywaydb.org/)
 
 ## License
 

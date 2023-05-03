@@ -1,8 +1,8 @@
 {
-  "name": "fireway",
-  "version": "1.1.0",
+  "name": "@dev-aces/fireway",
+  "version": "0.1.0",
   "description": "Schema migration tool for Firestore",
-  "types": "fireway.d.ts",
+  "types": "lib/index.d.ts",
   "keywords": [
     "schema",
     "migration",
@@ -10,49 +10,54 @@
     "typescript"
   ],
   "files": [
+    "/lib",
     "/src",
     "LICENSE",
-    "README.md",
-    "fireway.d.ts"
+    "README.md"
   ],
-  "main": "src/index.js",
-  "bin": "src/cli.js",
-  "repository": "git@github.com:kevlened/fireway.git",
-  "author": "kevlened <boyettel@gmail.com>",
+  "main": "lib/index.js",
+  "bin": "lib/cli.js",
+  "repository": "git@github.com:dev-aces/fireway.git",
+  "author": "Artur Ampilogov",
   "license": "MIT",
   "scripts": {
+    "clean": "rimraf ./lib",
+    "build": "npm run clean && tsc",
     "setup": "firebase setup:emulators:firestore",
     "emulator": "firebase emulators:start --only firestore",
     "test-runner": "node tests",
     "pretest": "mkdir -p tests/emptyMigration",
-    "test": "FIRESTORE_EMULATOR_HOST=0.0.0.0:8181 start-test emulator tcp:8181 test-runner",
+    "test": "GCLOUD_PROJECT=test FIRESTORE_EMULATOR_HOST=0.0.0.0:8181 start-test emulator tcp:8181 test-runner",
     "release": "yarn test && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm login && npm publish"
   },
   "husky": {
     "hooks": {
-      "pre-push": "yarn test"
+      "pre-push": "npm test"
     }
   },
   "peerDependencies": {
     "firebase-admin": ">=10"
   },
   "dependencies": {
-    "callsites": "^3.1.0",
-    "md5": "^2.2.1",
-    "sade": "^1.6.1",
-    "semver": "^7.3.7"
+    "md5": "^2.3.0",
+    "sade": "^1.8.1",
+    "semver": "^7.5.0"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^2.0.7",
+    "@types/md5": "^2.3.2",
     "@types/node": "^14.18.16",
+    "@types/semver": "^7.3.13",
     "capture-console": "^1.0.1",
     "firebase": "^9.21.0",
     "firebase-admin": "^11.7.0",
     "firebase-tools": "^11.29.1",
     "husky": "^4.2.5",
+    "prettier": "^2.8.8",
+    "rimraf": "^5.0.0",
     "start-server-and-test": "^1.14.0",
     "tape": "^4.13.2",
     "ts-node": "^10.7.0",
-    "typescript": "^4.6.4"
+    "typescript": "^4.9.5"
   }
 }
