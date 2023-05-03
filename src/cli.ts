@@ -10,19 +10,19 @@ const prog = sade('fireway').version(pkg.version);
 prog
   .command('migrate')
   .option('--path', 'Path to migration files', './migrations')
-  .option('--projectId', 'Target firebase project')
+  .option('--collection', 'Firebase collection name for migration results', 'migrations')
   .option('--dryRun', 'Simulates changes')
+  .option('--require', 'Requires a module before executing')
   .option(
     '--logLevel',
     'Log level (debug | log | warn | error | silent), default: log',
   )
-  .option('--require', 'Requires a module before executing')
   .describe('Migrates schema to the latest version')
   .example('migrate')
-  .example('--require="ts-node/register" migrate')
   .example('migrate --path=./my-migrations')
-  .example('migrate --projectId=my-staging-id')
+  .example('migrate --collection=flyway')
   .example('migrate --dryRun')
+  .example('migrate --require="ts-node/register"')
   .example('migrate --logLevel=silent')
   .action(async (opts: any) => {
     try {

@@ -38,7 +38,7 @@ module.exports.migrate = async ({ firestore, /* app */ }) => {
 
 ## Install
 
-1. Install NPM package:
+1. Install NPM package to Firebase functions projects:
 
     ```bash
     npm i @dev-aces/fireway
@@ -104,10 +104,10 @@ Most likely you'll want to test your migration scripts _locally_ first before ru
 
 ## Migration results
 
-Migration results are stored in the `migrations` collection in `Firestore` in the format `v[semver]__[description]`.
+Migration results are stored in the `flyway` collection (can be changed) in `Firestore` in the format `v[semver]__[description]`.
 
 ```js
-// /migrations/v0.0.1__typescript_example
+// flyway/v0.0.1__typescript_example
 
 {
   installed_rank: 3, // 0-based sequence
@@ -136,7 +136,8 @@ For more info, run any command with the `--help` flag
   $ @dev-aces/fireway migrate --help
 
 Options
-  --path           Path to migration files  (default ./migrations)
+  --path           Path to migration files  (default "./migrations")
+  --collection     Firebase collection name for migration results (default "flyway")
   --require        Requires a module before executing, example with TypeScript compiler: @dev-aces/fireway --require="ts-node/register" migrate
   --dryRun         Simulates changes
   -v, --version    Displays current version
