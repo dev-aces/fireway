@@ -104,7 +104,7 @@ Most likely you'll want to test your migration scripts _locally_ first before ru
 
 ## Migration results
 
-Migration results are stored in the `migrations` collection in `Firestore` in the format `[sequence_number]__v[semver]__[description]`.
+Migration results are stored in the `migrations` collection in `Firestore` in the format `[v[semver]__[description]`.
 
 ```js
 // /migrations/v0.0.1__typescript_example
