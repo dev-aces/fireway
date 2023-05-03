@@ -128,7 +128,7 @@ export const migrate = async ({
     // Freeze stat tracking
     stats.frozen = true;
     try {
-      const id = `${installed_rank}-${file.version}-${file.description}`;
+      const id = `v${file.version}__${file.description}`;
       await collection.doc(id).set(migrationResult);
     } finally {
       // Unfreeze stat tracking

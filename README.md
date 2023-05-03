@@ -1,16 +1,125 @@
-# fireway
+# Fireway
 
-A schema migration tool for firestore.
+A schema migration tool for Firestore.
+
+## Usage
+
+TypeScript and CommonJS JavaScript languages are supported.
+
+1. Create a migration file in the `functions/migration/` (default directory), call it in the format: `v[semver]__[description].ts` (or `.js`).
+
+TypeScript example:
+
+```ts
+// ./migrations/v0.0.1__typescript_example.ts
+
+import { IMigrationFunctionsArguments } from '@dev-aces/fireway';
+
+export async function migrate({ firestore }: IMigrationFunctionsArguments) {
+  await firestore
+    .collection('my_table')
+    .doc('document_id')
+    .set({ name: 'Fireway' });
+}
+```
+
+JavaScript example:
+
+```js
+// ./migrations/v0.0.1__javascript_example.js
+
+module.exports.migrate = async ({ firestore }) => {
+  await firestore
+    .collection('my_table')
+    .doc('document_id')
+    .set({ name: 'Fireway' });
+};
+```
 
 ## Install
 
+1. Install NPM package:
+
 ```bash
-npm i fireway
-
-# or
-
-npx fireway
+npm i @dev-aces/fireway
 ```
+
+For TypeScript additionally:
+
+2. Install [`ts-node`](https://www.npmjs.com/package/ts-node): `npm i ts-node`.
+3. Add `tsconfig.json` to the `functions` folder. Define a `ts-node` configuration block inside your `tsconfig.json` file:
+
+   ```json
+   {
+     "ts-node": {
+       "transpileOnly": true,
+       "compilerOptions": {
+         "module": "commonjs"
+       }
+     }
+   }
+   ```
+
+## Running locally
+
+Most likely you'll want to test your migration scripts _locally_ first before running them against your actual (presumably, production) instances.
+
+1. Ensure that [Firestore emulator](https://firebase.google.com/docs/emulator-suite/connect_firestore) is set up in `firebase.json` file.
+
+```json
+{
+  "emulators": {
+    "firestore": {
+      "port": 8080
+    }
+  }
+}
+```
+
+2. Start your local emulators with
+
+```bash
+firebase emulators:start
+```
+
+3. Run migrations.
+
+To connect to the local emulator `GCLOUD_PROJECT` environment variable is required but can have any value, e.g. "local". Specify `FIRESTORE_EMULATOR_HOST` variable pointing to your local emulator (default Firestore port is `8080`).
+
+For TypeScript:
+
+```bash
+GCLOUD_PROJECT=local FIRESTORE_EMULATOR_HOST=localhost:8080 @dev-aces/fireway --require="ts-node/register" migrate
+```
+
+For JavaScript:
+
+```bash
+GCLOUD_PROJECT=local FIRESTORE_EMULATOR_HOST=localhost:8080 @dev-aces/fireway migrate
+```
+
+## Migration results
+
+Migration results are stored in the `migrations` collection in `Firestore` in the format `[sequence_number]__v[semver]__[description]`.
+
+```js
+// /migrations/v0.0.1__typescript_example
+
+{
+  installed_rank: 3, // 0-based sequence
+  checksum: 'fdfe6a55a7c97a4346cb59871b4ce97c',
+  description: 'typescript_example',
+  execution_time: 1221,
+  installed_by: 'system_user_name',
+  installed_on: Timestamp(),
+  script: 'v0.0.1__typescript_example.ts',
+  type: 'ts',
+  version: '0.0.1',
+  success: true
+}
+```
+
+
 
 ## Credentials
 
@@ -26,164 +135,37 @@ export GOOGLE_APPLICATION_CREDENTIALS="path/to/firestore-service-account.json"
 
 ```bash
 Usage
-  $ fireway <command> [options]
+  $ @dev-aces/fireway migrate [options]
 
 Available Commands
   migrate    Migrates schema to the latest version
 
 For more info, run any command with the `--help` flag
-  $ fireway migrate --help
+  $ @dev-aces/fireway migrate --help
 
 Options
-  --require        Requires a module before executing
+  --path           Path to migration files  (default ./migrations)
+  --require        Requires a module before executing, example with TypeScript compiler: @dev-aces/fireway --require="ts-node/register" migrate
+  --dryRun         Simulates changes
   -v, --version    Displays current version
   -h, --help       Displays this message
-
-Examples
-  $ fireway migrate
-  $ fireway --require="ts-node/register" migrate
-```
-
-### `fireway migrate`
-
-```bash
-Description
-  Migrates schema to the latest version
-
-Usage
-  $ fireway migrate [options]
-
-Options
-  --path         Path to migration files  (default ./migrations)
-  --projectId    Target firebase project
-  --dryRun       Simulates changes
-  --require      Requires a module before executing
-  -h, --help     Displays this message
-
-Examples
-  $ fireway migrate
-  $ fireway migrate --path=./my-migrations
-  $ fireway migrate --projectId=my-staging-id
-  $ fireway migrate --dryRun
-  $ fireway --require="ts-node/register" migrate
-```
-
-## Migration file format
-
-Migration file name format: `v[semver]__[description].js`
-
-```js
-// each script gets a pre-configured firestore admin instance
-// possible params: app, firestore, dryRun
-
-const { FieldValue } = require('firebase-admin/firestore');
-
-module.exports.migrate = async ({ firestore }) => {
-  await firestore.collection('name').add({ key: FieldValue.serverTimestamp() });
-};
-```
-
-## Typed Migrations
-
-For type checking and Intellisense, there are two options:
-
-### TypeScript
-
-1. Ensure [`ts-node`](https://www.npmjs.com/package/ts-node) is installed
-2. Define a `ts-node` configuration block inside your `tsconfig.json` file:
-
-   ```json
-   {
-     "ts-node": {
-       "transpileOnly": true,
-       "compilerOptions": {
-         "module": "commonjs"
-       }
-     }
-   }
-   ```
-
-3. Create a migration
-
-   ```ts
-   // ./migrations/v0.0.1__typescript-example.ts
-
-   import { IMigrationFunctionsArguments } from 'fireway';
-
-   export async function migrate({ firestore }: IMigrationFunctionsArguments) {
-     await firestore.collection('data').doc('one').set({ key: 'value' });
-   }
-   ```
-
-4. Run `fireway migrate` with the `require` option
-
-   ```sh
-   $ fireway migrate --require="ts-node/register"
-   ```
-
-### JSDoc
-
-Alternatively, you can use [JSDoc](https://jsdoc.app/) for Intellisense
-
-```js
-/** @param { import('fireway').MigrateOptions } */
-module.exports.migrate = async ({ firestore }) => {
-  // Intellisense is enabled
-};
-```
-
-## Running locally
-
-Typically, `fireway` expects a `--projectId` option that lets you specify the Firebase project associated with your Firestore instance against which it performs migrations.
-However, most likely you'll want to test your migration scripts _locally_ first before running them against your actual (presumably, production) instances.
-If you are using the [Firestore emulator](https://firebase.google.com/docs/emulator-suite/connect_firestore), define the FIRESTORE_EMULATOR_HOST environment variable, e.g.:
-
-`export FIRESTORE_EMULATOR_HOST="localhost:8080"`
-
-The firestore node library will connect to your local instance. This way, you don't need a project ID and migrations will be run against your emulator instance. This works since `fireway` is built on the [firestore node library](https://www.npmjs.com/package/@google-cloud/firestore).
-
-## Migration logic
-
-1. Gather all the migration files and sort them according to semver
-2. Find the last migration in the `fireway` collection
-3. If the last migration failed, stop. (remove the failed migration result or restore the db to continue)
-4. Run the migration scripts since the last migration
-
-## Migration results
-
-Migration results are stored in the `migrations` collection in `firestore`
-
-```js
-// /migrations/3-0.0.1-example
-
-{
-  checksum: 'fdfe6a55a7c97a4346cb59871b4ce97c',
-  description: 'example',
-  execution_time: 1221,
-  installed_by: 'system_user_name',
-  installed_on: firestore.Timestamp(),
-  installed_rank: 3,
-  script: 'v0.0.1__example.js',
-  success: true,
-  type: 'js',
-  version: '0.0.1'
-}
 ```
 
 ## Contributing
 
+Fork the repository, make changes, ensure that project is tested:
+
 ```bash
-# To install packages and firestore emulator
 $ npm install
 $ npm setup
-
-# To run tests
-$ npm test
+$ npm run build && npm run test
 ```
+
+Create a PR.
 
 ## History
 
-Forked from https://github.com/kevlened/fireway[https://github.com/kevlened/fireway] and heavily inspired by [flyway](https://flywaydb.org/)
+Based on [kevlened/fireway](https://github.com/kevlened/fireway) work, which was inspired by [flyway](https://flywaydb.org/)
 
 ## License
 
