@@ -81,7 +81,7 @@ test(
       app,
       firestore,
     });
-    let snapshot = await firestore.collection('flyway').get();
+    let snapshot = await firestore.collection('fireway').get();
     t.equal(snapshot.size, 0);
 
     // First migration
@@ -90,13 +90,13 @@ test(
       app,
       firestore,
     });
-    snapshot = await firestore.collection('flyway').get();
+    snapshot = await firestore.collection('fireway').get();
     let dataSnapshot = await firestore.collection('data').get();
     t.equal(snapshot.size, 1);
     t.equal(dataSnapshot.size, 1);
     let [doc1] = dataSnapshot.docs;
     t.deepEqual(doc1.data(), { key: 'value' });
-    await assertData(t, firestore, 'flyway/v0.0.0__first', {
+    await assertData(t, firestore, 'fireway/v0.0.0__first', {
       checksum: '3a29bfbd4a83273c613ca3d9bf40e549',
       description: 'first',
       execution_time: 251,
@@ -118,7 +118,7 @@ test(
       app,
       firestore,
     });
-    snapshot = await firestore.collection('flyway').get();
+    snapshot = await firestore.collection('fireway').get();
     dataSnapshot = await firestore.collection('data').get();
     t.equal(snapshot.size, 2);
     t.equal(dataSnapshot.size, 2);
@@ -126,7 +126,7 @@ test(
     const doc2 = dataSnapshot.docs[1];
     t.deepEqual(doc1.data(), { key: 'value' });
     t.deepEqual(doc2.data(), { key: 'value' });
-    await assertData(t, firestore, 'flyway/v0.1.0__second', {
+    await assertData(t, firestore, 'fireway/v0.1.0__second', {
       checksum: '95031069f80997d046b3cf405af9b524',
       description: 'second',
       execution_time: 251,
@@ -183,9 +183,9 @@ test(
       });
       t.fail('Should throw an error');
     } catch (e) {
-      const snapshot = await firestore.collection('flyway').get();
+      const snapshot = await firestore.collection('fireway').get();
       t.equal(snapshot.size, 1);
-      await assertData(t, firestore, 'flyway/v0.0.0__error', {
+      await assertData(t, firestore, 'fireway/v0.0.0__error', {
         checksum: '82c81f69f2c5276ef1eefff58c62ce5a',
         description: 'error',
         execution_time: 251,
@@ -210,7 +210,7 @@ test(
       });
       t.fail('Should throw an error');
     } catch (e) {
-      const snapshot = await firestore.collection('flyway').get();
+      const snapshot = await firestore.collection('fireway').get();
       const dataSnapshot = await firestore.collection('data').get();
       t.equal(snapshot.size, 1);
       t.equal(dataSnapshot.size, 0);
@@ -228,7 +228,7 @@ test(
       firestore,
     });
 
-    snapshot = await firestore.collection('flyway').get();
+    snapshot = await firestore.collection('fireway').get();
     let dataSnapshot = await firestore.collection('data').get();
     t.equal(snapshot.size, 0);
     t.equal(dataSnapshot.size, 0);
@@ -244,7 +244,7 @@ test(
       firestore,
     });
 
-    let snapshot = await firestore.collection('flyway').get();
+    let snapshot = await firestore.collection('fireway').get();
     let dataSnapshot = await firestore.collection('data').get();
     t.equal(snapshot.size, 1);
     t.equal(dataSnapshot.size, 1);
@@ -256,7 +256,7 @@ test(
       firestore,
     });
 
-    snapshot = await firestore.collection('flyway').get();
+    snapshot = await firestore.collection('fireway').get();
     dataSnapshot = await firestore.collection('data').get();
     t.equal(snapshot.size, 2);
     t.equal(dataSnapshot.size, 0);
@@ -277,7 +277,7 @@ test(
       t.assert(
         /This filename doesn't match the required format.*/.test(e.message),
       );
-      const snapshot = await firestore.collection('flyway').get();
+      const snapshot = await firestore.collection('fireway').get();
       t.equal(snapshot.size, 0);
     }
   }),
@@ -292,7 +292,7 @@ test(
       firestore,
     });
 
-    snapshot = await firestore.collection('flyway').get();
+    snapshot = await firestore.collection('fireway').get();
     let dataSnapshot = await firestore.collection('data').get();
     t.equal(snapshot.size, 1);
     t.equal(dataSnapshot.size, 2);
@@ -317,7 +317,7 @@ test(
       firestore,
     });
 
-    const snapshot = await firestore.collection('flyway').get();
+    const snapshot = await firestore.collection('fireway').get();
     let dataSnapshot = await firestore.collection('data').get();
     t.equal(snapshot.size, 1);
     t.equal(dataSnapshot.size, 1, '"data" collection should have 1 document');
@@ -351,7 +351,7 @@ test(
 //       firestore,
 //     });
 
-//     snapshot = await firestore.collection('flyway').get();
+//     snapshot = await firestore.collection('fireway').get();
 //     let dataSnapshot = await firestore.collection('data').get();
 //     t.equal(snapshot.size, 1);
 //     t.equal(dataSnapshot.size, 1);
@@ -371,7 +371,7 @@ test(
       require: 'ts-node/register',
     });
 
-    const snapshot = await firestore.collection('flyway').get();
+    const snapshot = await firestore.collection('fireway').get();
     let dataSnapshot = await firestore.collection('data').get();
     t.equal(snapshot.size, 1);
     t.equal(dataSnapshot.size, 1);
@@ -385,7 +385,7 @@ test(
       added: 0,
     });
 
-    await assertData(t, firestore, 'flyway/v0.0.0__first', {
+    await assertData(t, firestore, 'fireway/v0.0.0__first', {
       checksum: '542faba96904b63068c101daeefa2c3e',
       description: 'first',
       execution_time: 251,

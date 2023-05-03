@@ -5,12 +5,12 @@ import { migrate } from './migrate';
 // @ts-ignore
 import pkg from '../package.json' assert { type: 'json' };
 
-const prog = sade('fireway').version(pkg.version);
+const prog = sade('@dev-aces/fireway').version(pkg.version);
 
 prog
   .command('migrate')
   .option('--path', 'Path to migration files', './migrations')
-  .option('--collection', 'Firebase collection name for migration results', 'migrations')
+  .option('--collection', 'Firebase collection name for migration results', 'fireway')
   .option('--dryRun', 'Simulates changes')
   .option('--require', 'Requires a module before executing')
   .option(
@@ -20,7 +20,7 @@ prog
   .describe('Migrates schema to the latest version')
   .example('migrate')
   .example('migrate --path=./my-migrations')
-  .example('migrate --collection=flyway')
+  .example('migrate --collection=fireway')
   .example('migrate --dryRun')
   .example('migrate --require="ts-node/register"')
   .example('migrate --logLevel=silent')
