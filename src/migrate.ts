@@ -3,11 +3,7 @@ import semver from 'semver';
 import { getMigrationFiles } from './getMigrationFiles';
 import { ConsoleLogger, LogLevel } from './logger';
 
-import {
-  Firestore,
-  QuerySnapshot,
-  //   getFirestore,
-} from 'firebase-admin/firestore';
+import { Firestore, QuerySnapshot } from 'firebase-admin/firestore';
 import { loadRequiredLib } from './loadRequiredLib';
 import { IMigrationResult } from './types/IMigrationResult';
 import { IStatistics } from './types/IStatistics';
@@ -16,6 +12,7 @@ import { migrateScript } from './migrateScript';
 
 interface MigrateProps {
   path: string;
+  collection?: string;
   dryRun?: boolean;
   require?: string;
   logLevel?: LogLevel;
@@ -26,6 +23,7 @@ interface MigrateProps {
 
 export const migrate = async ({
   path: dir,
+  collection = 'flyway',
   dryRun = false,
   require: requireLibPath,
   logLevel = LogLevel.debug,
@@ -74,10 +72,10 @@ export const migrate = async ({
   (firestore as any).stats = stats;
   proxyWritableMethods({ logger, dryRun });
 
-  const collection = firestore.collection('migrations');
+  const resultsCollection = firestore.collection(collection);
 
   // Get the latest migration
-  const result = (await collection
+  const result = (await resultsCollection
     .orderBy('installed_rank', 'desc')
     .limit(1)
     .get()) as QuerySnapshot<IMigrationResult>;
@@ -129,7 +127,7 @@ export const migrate = async ({
     stats.frozen = true;
     try {
       const id = `v${file.version}__${file.description}`;
-      await collection.doc(id).set(migrationResult);
+      await resultsCollection.doc(id).set(migrationResult);
     } finally {
       // Unfreeze stat tracking
       delete stats.frozen;
