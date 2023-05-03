@@ -96,7 +96,7 @@ test(
     t.equal(dataSnapshot.size, 1);
     let [doc1] = dataSnapshot.docs;
     t.deepEqual(doc1.data(), { key: 'value' });
-    await assertData(t, firestore, 'migrations/0-0.0.0-first', {
+    await assertData(t, firestore, 'migrations/v0.0.0__first', {
       checksum: '3a29bfbd4a83273c613ca3d9bf40e549',
       description: 'first',
       execution_time: 251,
@@ -126,7 +126,7 @@ test(
     const doc2 = dataSnapshot.docs[1];
     t.deepEqual(doc1.data(), { key: 'value' });
     t.deepEqual(doc2.data(), { key: 'value' });
-    await assertData(t, firestore, 'migrations/1-0.1.0-second', {
+    await assertData(t, firestore, 'migrations/v0.1.0__second', {
       checksum: '95031069f80997d046b3cf405af9b524',
       description: 'second',
       execution_time: 251,
@@ -185,7 +185,7 @@ test(
     } catch (e) {
       const snapshot = await firestore.collection('migrations').get();
       t.equal(snapshot.size, 1);
-      await assertData(t, firestore, 'migrations/0-0.0.0-error', {
+      await assertData(t, firestore, 'migrations/v0.0.0__error', {
         checksum: '82c81f69f2c5276ef1eefff58c62ce5a',
         description: 'error',
         execution_time: 251,
@@ -385,7 +385,7 @@ test(
       added: 0,
     });
 
-    await assertData(t, firestore, 'migrations/0-0.0.0-first', {
+    await assertData(t, firestore, 'migrations/v0.0.0__first', {
       checksum: '542faba96904b63068c101daeefa2c3e',
       description: 'first',
       execution_time: 251,

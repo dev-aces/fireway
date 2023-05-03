@@ -1,7 +1,7 @@
 {
   "name": "@dev-aces/fireway",
-  "version": "0.1.0",
-  "description": "Schema migration tool for Firestore",
+  "version": "0.1.2",
+  "description": "A schema migration tool for Firestore",
   "types": "lib/index.d.ts",
   "keywords": [
     "schema",
