@@ -1,12 +1,12 @@
 # Fireway
 
 A schema migration tool for Firestore.
+TypeScript and CommonJS JavaScript languages are supported.
 
 ## Usage
 
-TypeScript and CommonJS JavaScript languages are supported.
-
-1. Create a migration file in the `functions/migration/` (default directory), call it in the format: `v[semver]__[description].ts` (or `.js`).
+Create a migration file in the `functions/migration` (default directory).  
+Name the file in the format: `v[semver]__[description].ts` (or `.js`).
 
 TypeScript example:
 
@@ -15,7 +15,7 @@ TypeScript example:
 
 import { IMigrationFunctionsArguments } from '@dev-aces/fireway';
 
-export async function migrate({ firestore }: IMigrationFunctionsArguments) {
+export async function migrate({ firestore, /* app */ }: IMigrationFunctionsArguments) {
   await firestore
     .collection('my_table')
     .doc('document_id')
@@ -28,7 +28,7 @@ JavaScript example:
 ```js
 // ./migrations/v0.0.1__javascript_example.js
 
-module.exports.migrate = async ({ firestore }) => {
+module.exports.migrate = async ({ firestore, /* app */ }) => {
   await firestore
     .collection('my_table')
     .doc('document_id')
@@ -40,13 +40,17 @@ module.exports.migrate = async ({ firestore }) => {
 
 1. Install NPM package:
 
-```bash
-npm i @dev-aces/fireway
-```
+    ```bash
+    npm i @dev-aces/fireway
+    ```
 
 For TypeScript additionally:
 
-2. Install [`ts-node`](https://www.npmjs.com/package/ts-node): `npm i ts-node`.
+2. Install [`ts-node`](https://www.npmjs.com/package/ts-node): 
+
+    ```bash
+    npm i ts-node
+    ```
 3. Add `tsconfig.json` to the `functions` folder. Define a `ts-node` configuration block inside your `tsconfig.json` file:
 
    ```json
@@ -62,41 +66,41 @@ For TypeScript additionally:
 
 ## Running locally
 
-Most likely you'll want to test your migration scripts _locally_ first before running them against your actual (presumably, production) instances.
+Most likely you'll want to test your migration scripts _locally_ first before running them against Cloud instances.
 
 1. Ensure that [Firestore emulator](https://firebase.google.com/docs/emulator-suite/connect_firestore) is set up in `firebase.json` file.
 
-```json
-{
-  "emulators": {
-    "firestore": {
-      "port": 8080
-    }
-  }
-}
-```
+   ```json
+   {
+     "emulators": {
+       "firestore": {
+        "port": 8080
+      }
+     }
+   }
+   ```
 
 2. Start your local emulators with
 
-```bash
-firebase emulators:start
-```
+   ```bash
+   firebase emulators:start
+   ```
 
 3. Run migrations.
 
-To connect to the local emulator `GCLOUD_PROJECT` environment variable is required but can have any value, e.g. "local". Specify `FIRESTORE_EMULATOR_HOST` variable pointing to your local emulator (default Firestore port is `8080`).
+   To connect to the local emulator `GCLOUD_PROJECT` environment variable is required but can have any value, e.g. "local". Specify `FIRESTORE_EMULATOR_HOST` variable pointing to your local emulator (default Firestore port is `8080`).
 
-For TypeScript:
+   For TypeScript:
 
-```bash
-GCLOUD_PROJECT=local FIRESTORE_EMULATOR_HOST=localhost:8080 @dev-aces/fireway --require="ts-node/register" migrate
-```
+   ```bash
+   GCLOUD_PROJECT=local FIRESTORE_EMULATOR_HOST=localhost:8080 @dev-aces/fireway --require="ts-node/register" migrate
+   ```
 
-For JavaScript:
+   For JavaScript:
 
-```bash
-GCLOUD_PROJECT=local FIRESTORE_EMULATOR_HOST=localhost:8080 @dev-aces/fireway migrate
-```
+   ```bash
+   GCLOUD_PROJECT=local FIRESTORE_EMULATOR_HOST=localhost:8080 @dev-aces/fireway migrate
+   ```
 
 ## Migration results
 
@@ -117,18 +121,6 @@ Migration results are stored in the `migrations` collection in `Firestore` in th
   version: '0.0.1',
   success: true
 }
-```
-
-
-
-## Credentials
-
-In order to fireway be able to connect to firestore you need to set up the environment variable `GOOGLE_APPLICATION_CREDENTIALS` with service account file path.
-
-Example:
-
-```bash
-export GOOGLE_APPLICATION_CREDENTIALS="path/to/firestore-service-account.json"
 ```
 
 ## CLI
