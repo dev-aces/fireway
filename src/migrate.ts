@@ -23,7 +23,7 @@ interface MigrateProps {
 
 export const migrate = async ({
   path: dir,
-  collection = 'flyway',
+  collection = 'fireway',
   dryRun = false,
   require: requireLibPath,
   logLevel = LogLevel.debug,

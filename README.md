@@ -104,10 +104,10 @@ Most likely you'll want to test your migration scripts _locally_ first before ru
 
 ## Migration results
 
-Migration results are stored in the `flyway` collection (can be changed) in `Firestore` in the format `v[semver]__[description]`.
+Migration results are stored in the `fireway` collection (can be changed) in `Firestore` in the format `v[semver]__[description]`.
 
 ```js
-// flyway/v0.0.1__typescript_example
+// fireway/v0.0.1__typescript_example
 
 {
   installed_rank: 3, // 0-based sequence
@@ -137,7 +137,7 @@ For more info, run any command with the `--help` flag
 
 Options
   --path           Path to migration files  (default "./migrations")
-  --collection     Firebase collection name for migration results (default "flyway")
+  --collection     Firebase collection name for migration results (default "fireway")
   --require        Requires a module before executing, example with TypeScript compiler: @dev-aces/fireway --require="ts-node/register" migrate
   --dryRun         Simulates changes
   -v, --version    Displays current version
