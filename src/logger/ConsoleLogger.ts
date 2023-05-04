@@ -1,29 +1,33 @@
-import { ILogger } from "./ILogger";
-import { LogLevel } from "./LogLevel";
+import { ILogger } from './ILogger';
+import { LogLevel, LogLevelString } from './LogLevel';
 
 export class ConsoleLogger implements ILogger {
-  constructor(public readonly level: LogLevel) {}
+  private readonly levelOrder: LogLevel = LogLevel.debug;
+
+  constructor(level: LogLevelString) {
+    this.levelOrder = LogLevel[level];
+  }
 
   error(message?: any, ...optionalParams: any[]) {
-    if (this.level <= LogLevel.error) {
+    if (this.levelOrder <= LogLevel.error) {
       console.error(message, optionalParams);
     }
   }
-  
+
   warn(message?: any, ...optionalParams: any[]) {
-    if (this.level <= LogLevel.warn) {
+    if (this.levelOrder <= LogLevel.warn) {
       console.warn(message, optionalParams);
     }
   }
 
   log(message?: any, ...optionalParams: any[]) {
-    if (this.level <= LogLevel.log) {
+    if (this.levelOrder <= LogLevel.log) {
       console.log(message, optionalParams);
     }
   }
 
   debug(message?: any, ...optionalParams: any[]) {
-    if (this.level <= LogLevel.debug) {
+    if (this.levelOrder <= LogLevel.debug) {
       console.debug(message, optionalParams);
     }
   }

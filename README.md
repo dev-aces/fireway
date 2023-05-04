@@ -124,6 +124,11 @@ Migration results are stored in the `fireway` collection (can be changed) in `Fi
 }
 ```
 
+## Re-running script
+
+If script execution failed, the workflow will be stopped. Running migration again will re-run the latest failed script.
+
+
 ## CLI
 
 ```bash
@@ -141,6 +146,7 @@ Options
   --collection     Firebase collection name for migration results (default "fireway")
   --require        Requires a module before executing, example with TypeScript compiler: fireway migrate --require="ts-node/register"
   --dryRun         Simulates changes
+  --logLevel       Log level, options: debug, log, warn, error (default "log")
   -v, --version    Displays current version
   -h, --help       Displays this message
 ```
