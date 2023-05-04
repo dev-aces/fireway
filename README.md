@@ -203,19 +203,6 @@ If script execution failed, the workflow will be stopped. Running migration agai
 
 Alternatively use `GOOGLE_APPLICATION_CREDENTIALS` environment variable as described in [Firebase Admin Auth instructions](https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments).
 
-import { IMigrationFunctionsArguments } from '@dev-aces/fireway';
-
-export async function migrate({
-firestore /_ app _/,
-}: IMigrationFunctionsArguments) {
-await firestore
-.collection('my_table')
-.doc('document_id')
-.set({ name: 'Fireway' });
-}
-
-````
-
 ## CLI
 
 ```bash
@@ -247,8 +234,6 @@ $ npm install
 $ npm setup
 $ npm run build && npm run test
 ```
-
-Create a PR.
 
 ## History
 
