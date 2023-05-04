@@ -34,6 +34,18 @@ export const migrate = async ({
     loadRequiredLib(requireLibPath, logger);
   }
 
+  // might be passed from tests
+  if (!app) {
+    app = initializeApp();
+  }
+
+  // Create a new instance of Firestore, so we can override WriteBatch prototypes
+  const firestore = new Firestore({
+    projectId: app.options.projectId,
+  });
+
+  logger.log(`Running migrations for projectId: ${app.options.projectId ?? ''}`);
+
   const stats: IStatistics = {
     scannedFiles: 0,
     executedFiles: 0,
@@ -55,16 +67,6 @@ export const migrate = async ({
   if (dryRun) {
     logger.log(`Dry run mode, no records will be touched`);
   }
-
-  // might be passed from tests
-  if (!app) {
-    app = initializeApp();
-  }
-
-  // Create a new instance of Firestore, so we can override WriteBatch prototypes
-  const firestore = new Firestore({
-    projectId: app.options.projectId,
-  });
 
   // Extend Firestore instance with the "stats" field,
   // so it can be used inside proxyWritableMethods
