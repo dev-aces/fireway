@@ -15,7 +15,9 @@ TypeScript example:
 
 import { IMigrationFunctionsArguments } from '@dev-aces/fireway';
 
-export async function migrate({ firestore, /* app */ }: IMigrationFunctionsArguments) {
+export async function migrate({
+  firestore /* app */,
+}: IMigrationFunctionsArguments) {
   await firestore
     .collection('my_table')
     .doc('document_id')
@@ -28,7 +30,7 @@ JavaScript example:
 ```js
 // ./migrations/v0.0.1__javascript_example.js
 
-module.exports.migrate = async ({ firestore, /* app */ }) => {
+module.exports.migrate = async ({ firestore /* app */ }) => {
   await firestore
     .collection('my_table')
     .doc('document_id')
@@ -40,17 +42,18 @@ module.exports.migrate = async ({ firestore, /* app */ }) => {
 
 1. Install NPM package to Firebase functions projects:
 
-    ```bash
-    npm i @dev-aces/fireway
-    ```
+   ```bash
+   npm i @dev-aces/fireway
+   ```
 
 For TypeScript additionally:
 
-2. Install [`ts-node`](https://www.npmjs.com/package/ts-node): 
+2. Install [`ts-node`](https://www.npmjs.com/package/ts-node):
 
-    ```bash
-    npm i ts-node
-    ```
+   ```bash
+   npm i ts-node
+   ```
+
 3. Add `tsconfig.json` to the `functions` folder. Define a `ts-node` configuration block inside your `tsconfig.json` file:
 
    ```json
@@ -74,8 +77,8 @@ Most likely you'll want to test your migration scripts _locally_ first before ru
    {
      "emulators": {
        "firestore": {
-        "port": 8080
-      }
+         "port": 8080
+       }
      }
    }
    ```
@@ -126,7 +129,46 @@ Migration results are stored in the `fireway` collection (can be changed) in `Fi
 
 ## Re-running script
 
-If script execution failed, the workflow will be stopped. Running migration again will re-run the latest failed script.
+If script execution failed, the workflow will be stopped. Running migration again will start from the latest failed script.
+
+## Running in Cloud
+
+1. Generate a Firebase Service Account JSON key by opening: Project Settings -> Service Accounts -> Generate new private key. Private key will have the admin role and contain your project settings.
+
+2. Set up CI provider to use that key.
+   For Github Actions, add a secret to the Github repository, e.g. `FIREBASE_SERVICE_ACCOUNT_JSON_DEV`.
+
+   In the Github workflow use `google-github-actions/auth@v1` to load the credentials
+
+   ```
+   jobs:
+     build_and_deploy:
+       runs-on: ubuntu-latest
+       name: Dev workflow    
+       steps:
+         - uses: actions/checkout@v3
+         - name: 'NPP install and build steps'
+           run: |
+             echo "your scripts"
+         - name: 'Authenticate to Google Cloud'
+           uses: 'google-github-actions/auth@v1'
+           with:
+             credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON_DEV }}'
+             create_credentials_file: true
+             cleanup_credentials: true
+         - name: Deploy functions and run migrations
+           run: |
+             npm run migrate
+             firebase deploy --only functions
+   ```
+
+   where `package.json` scripts section has:
+
+   ```
+   "migrate": "fireway migrate --require=\"ts-node/register\""
+   ```
+
+Alternatively use `GOOGLE_APPLICATION_CREDENTIALS` environment variable as described in [Firebase Admin Auth instructions](https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments).
 
 
 ## CLI
