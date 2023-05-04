@@ -1,6 +1,6 @@
 {
   "name": "@dev-aces/fireway",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A schema migration tool for Firestore",
   "types": "lib/index.d.ts",
   "keywords": [
@@ -16,7 +16,9 @@
     "README.md"
   ],
   "main": "lib/index.js",
-  "bin": "lib/cli.js",
+  "bin": {
+    "fireway": "lib/cli.js"
+  },
   "repository": "git@github.com:dev-aces/fireway.git",
   "author": "Artur Ampilogov",
   "license": "MIT",

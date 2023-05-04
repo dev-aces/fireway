@@ -88,18 +88,19 @@ Most likely you'll want to test your migration scripts _locally_ first before ru
 
 3. Run migrations.
 
-   To connect to the local emulator `GCLOUD_PROJECT` environment variable is required but can have any value, e.g. "local". Specify `FIRESTORE_EMULATOR_HOST` variable pointing to your local emulator (default Firestore port is `8080`).
+   To connect to the local emulator `GCLOUD_PROJECT` environment variable is required pointing to your projectId. Check `.firebaserc` file and the `{ "projects": { "default": "[project-id]" }}` settings. If it is not specified, any value can be provided, e.g. "local".  
+   Specify `FIRESTORE_EMULATOR_HOST` variable pointing to your local emulator (default Firestore port is `8080`).
 
    For TypeScript:
 
    ```bash
-   GCLOUD_PROJECT=local FIRESTORE_EMULATOR_HOST=localhost:8080 @dev-aces/fireway --require="ts-node/register" migrate
+   GCLOUD_PROJECT=project-id FIRESTORE_EMULATOR_HOST=localhost:8080 fireway --require="ts-node/register" migrate
    ```
 
    For JavaScript:
 
    ```bash
-   GCLOUD_PROJECT=local FIRESTORE_EMULATOR_HOST=localhost:8080 @dev-aces/fireway migrate
+   GCLOUD_PROJECT=project-id FIRESTORE_EMULATOR_HOST=localhost:8080 fireway migrate
    ```
 
 ## Migration results
@@ -127,18 +128,18 @@ Migration results are stored in the `fireway` collection (can be changed) in `Fi
 
 ```bash
 Usage
-  $ @dev-aces/fireway migrate [options]
+  $ fireway migrate [options]
 
 Available Commands
   migrate    Migrates schema to the latest version
 
 For more info, run any command with the `--help` flag
-  $ @dev-aces/fireway migrate --help
+  $ fireway migrate --help
 
 Options
   --path           Path to migration files  (default "./migrations")
   --collection     Firebase collection name for migration results (default "fireway")
-  --require        Requires a module before executing, example with TypeScript compiler: @dev-aces/fireway --require="ts-node/register" migrate
+  --require        Requires a module before executing, example with TypeScript compiler: fireway migrate --require="ts-node/register"
   --dryRun         Simulates changes
   -v, --version    Displays current version
   -h, --help       Displays this message
