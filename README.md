@@ -15,9 +15,7 @@ TypeScript example:
 
 import { IMigrationFunctionsArguments } from '@dev-aces/fireway';
 
-export async function migrate({
-  firestore /* app */,
-}: IMigrationFunctionsArguments) {
+export async function migrate({ firestore }: IMigrationFunctionsArguments) {
   await firestore
     .collection('my_table')
     .doc('document_id')
@@ -30,12 +28,47 @@ JavaScript example:
 ```js
 // ./migrations/v0.0.1__javascript_example.js
 
-module.exports.migrate = async ({ firestore /* app */ }) => {
+module.exports.migrate = async ({ firestore }) => {
   await firestore
     .collection('my_table')
     .doc('document_id')
     .set({ name: 'Fireway' });
 };
+```
+
+### Extended example
+
+The library is using [Modular SDK](https://firebase.google.com/docs/web/modular-upgrade) for app initialization. It is possible to use the `app` argument in migration scripts to initialize another Firebase service, for example, `auth`.
+
+```ts
+// ./migrations/v0.2.0__typescript_extended_example.ts
+import { IMigrationFunctionsArguments } from '@dev-aces/fireway';
+import { getAuth } from 'firebase-admin/auth';
+import { FieldValue } from 'firebase-admin/firestore';
+
+export async function migrate({
+  firestore,
+  app,
+}: IMigrationFunctionsArguments) {
+  // Auth example
+  const firebaseAuth = getAuth(app);
+  const email = 'test-user@test.com';
+  // search user identity
+  const user = await firebaseAuth.getUserByEmail(email);
+  if (!user) {
+    await firebaseAuth.createUser({
+      email: email,
+      emailVerified: true,
+      disabled: false,
+    });
+  }
+
+  // FieldValue example
+  await firestore.collection('table').doc('123').ref.update({
+    obsoleteField: FieldValue.delete(),
+    date: FieldValue.serverTimestamp(),
+  });
+}
 ```
 
 ## Install
@@ -144,7 +177,7 @@ If script execution failed, the workflow will be stopped. Running migration agai
    jobs:
      build_and_deploy:
        runs-on: ubuntu-latest
-       name: Dev workflow    
+       name: Dev workflow
        steps:
          - uses: actions/checkout@v3
          - name: 'NPP install and build steps'
@@ -170,6 +203,18 @@ If script execution failed, the workflow will be stopped. Running migration agai
 
 Alternatively use `GOOGLE_APPLICATION_CREDENTIALS` environment variable as described in [Firebase Admin Auth instructions](https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments).
 
+import { IMigrationFunctionsArguments } from '@dev-aces/fireway';
+
+export async function migrate({
+firestore /_ app _/,
+}: IMigrationFunctionsArguments) {
+await firestore
+.collection('my_table')
+.doc('document_id')
+.set({ name: 'Fireway' });
+}
+
+````
 
 ## CLI
 
@@ -191,7 +236,7 @@ Options
   --logLevel       Log level, options: debug, log, warn, error (default "log")
   -v, --version    Displays current version
   -h, --help       Displays this message
-```
+````
 
 ## Contributing
 
