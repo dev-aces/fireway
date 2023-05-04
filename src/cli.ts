@@ -10,12 +10,17 @@ const prog = sade('@dev-aces/fireway').version(pkg.version);
 prog
   .command('migrate')
   .option('--path', 'Path to migration files', './migrations')
-  .option('--collection', 'Firebase collection name for migration results', 'fireway')
+  .option(
+    '--collection',
+    'Firebase collection name for migration results',
+    'fireway',
+  )
   .option('--dryRun', 'Simulates changes')
   .option('--require', 'Requires a module before executing')
   .option(
     '--logLevel',
-    'Log level (debug | log | warn | error | silent), default: log',
+    'Log level, options: debug | log | warn | error',
+    'log',
   )
   .describe('Migrates schema to the latest version')
   .example('migrate')
@@ -23,7 +28,7 @@ prog
   .example('migrate --collection=fireway')
   .example('migrate --dryRun')
   .example('migrate --require="ts-node/register"')
-  .example('migrate --logLevel=silent')
+  .example('migrate --logLevel=debug')
   .action(async (opts: any) => {
     try {
       opts.debug = !opts.quiet;

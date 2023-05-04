@@ -1,7 +1,7 @@
 import { App, initializeApp } from 'firebase-admin/app';
 import semver from 'semver';
 import { getMigrationFiles } from './getMigrationFiles';
-import { ConsoleLogger, LogLevel } from './logger';
+import { ConsoleLogger, LogLevelString } from './logger';
 
 import { Firestore, QuerySnapshot } from 'firebase-admin/firestore';
 import { loadRequiredLib } from './loadRequiredLib';
@@ -15,10 +15,9 @@ interface MigrateProps {
   collection?: string;
   dryRun?: boolean;
   require?: string;
-  logLevel?: LogLevel;
+  logLevel?: LogLevelString;
   // might be passed from tests
   app?: App;
-  firestore?: Firestore;
 }
 
 export const migrate = async ({
@@ -26,7 +25,7 @@ export const migrate = async ({
   collection = 'fireway',
   dryRun = false,
   require: requireLibPath,
-  logLevel = LogLevel.debug,
+  logLevel = 'log',
   app,
 }: MigrateProps) => {
   const logger = new ConsoleLogger(logLevel);
@@ -79,18 +78,19 @@ export const migrate = async ({
     .orderBy('installed_rank', 'desc')
     .limit(1)
     .get()) as QuerySnapshot<IMigrationResult>;
-  const [latestDoc] = result.docs;
 
+  const [latestDoc] = result.docs;
   const latest = latestDoc?.data();
-  if (latest && !latest.success) {
-    throw new Error(
-      `Migration to version ${latest.version} using ${latest.script} failed! Please restore backups and roll back database and code!`,
-    );
-  }
 
   // Filter out applied migration files
   const targetFiles = latest?.version
-    ? files.filter((file) => semver.gt(file.version, latest.version))
+    ? files.filter(
+        (file) =>
+          // run only files with greater version
+          semver.gt(file.version, latest.version) ||
+          // or if the latest is failed, we are going to re-run the script
+          (!latest.success && semver.satisfies(file.version, latest.version)),
+      )
     : [...files];
 
   // Sort them by semver
