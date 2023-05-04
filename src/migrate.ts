@@ -79,18 +79,18 @@ export const migrate = async ({
     .orderBy('installed_rank', 'desc')
     .limit(1)
     .get()) as QuerySnapshot<IMigrationResult>;
-  const [latestDoc] = result.docs;
 
+  const [latestDoc] = result.docs;
   const latest = latestDoc?.data();
-  if (latest && !latest.success) {
-    throw new Error(
-      `Migration to version ${latest.version} using ${latest.script} failed! Please restore backups and roll back database and code!`,
-    );
-  }
 
   // Filter out applied migration files
   const targetFiles = latest?.version
-    ? files.filter((file) => semver.gt(file.version, latest.version))
+    ? files.filter(
+        (file) =>
+          semver.gt(file.version, latest.version) ||
+          // if latest is failed, we are going to re-run the script
+          (!latest.success && semver.satisfies(file.version, latest.version)),
+      )
     : [...files];
 
   // Sort them by semver
