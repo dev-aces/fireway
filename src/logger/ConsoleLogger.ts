@@ -8,9 +8,9 @@ export class ConsoleLogger implements ILogger {
     this.levelOrder = LogLevel[level];
   }
 
-  error(message?: any, ...optionalParams: any[]) {
+  error(message?: any) {
     if (this.levelOrder <= LogLevel.error) {
-      console.error(message, optionalParams);
+      console.error(message);
     }
   }
 
@@ -20,15 +20,15 @@ export class ConsoleLogger implements ILogger {
     }
   }
 
-  log(message?: any, ...optionalParams: any[]) {
+  log(message?: any) {
     if (this.levelOrder <= LogLevel.log) {
-      console.log(message, optionalParams);
+      console.log(message);
     }
   }
 
-  debug(message?: any, ...optionalParams: any[]) {
+  debug(message?: any) {
     if (this.levelOrder <= LogLevel.debug) {
-      console.debug(message, optionalParams);
+      console.debug(message);
     }
   }
 }
