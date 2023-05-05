@@ -34,7 +34,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "npm run build && run npm test"
+      "pre-push": "npm run build && npm test"
     }
   },
   "peerDependencies": {
