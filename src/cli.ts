@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import sade from 'sade';
-import { migrate } from './migrate';
+import { MigrateProps, migrate } from './migrate';
 // @ts-ignore
 import pkg from '../package.json' assert { type: 'json' };
 
@@ -17,11 +17,7 @@ prog
   )
   .option('--dryRun', 'Simulates changes')
   .option('--require', 'Requires a module before executing')
-  .option(
-    '--logLevel',
-    'Log level, options: debug | log | warn | error',
-    'log',
-  )
+  .option('--logLevel', 'Log level, options: debug | log | warn | error', 'log')
   .describe('Migrates schema to the latest version')
   .example('migrate')
   .example('migrate --path=./my-migrations')
@@ -29,9 +25,8 @@ prog
   .example('migrate --dryRun')
   .example('migrate --require="ts-node/register"')
   .example('migrate --logLevel=debug')
-  .action(async (opts: any) => {
+  .action(async (opts: MigrateProps) => {
     try {
-      opts.debug = !opts.quiet;
       await migrate(opts);
     } catch (e: any) {
       console.error('ERROR:', e.message);

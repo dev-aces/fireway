@@ -10,7 +10,7 @@ import { IStatistics } from './types/IStatistics';
 import { proxyWritableMethods } from './proxyWritableMethods';
 import { migrateScript } from './migrateScript';
 
-interface MigrateProps {
+export interface MigrateProps {
   path: string;
   collection?: string;
   dryRun?: boolean;
@@ -166,9 +166,8 @@ export const migrate = async ({
     }
   }
 
-  // Get the latest migration
-  const resultAfterMigrations = (await firestore
-    .collection(collection)
+  // Get the latest migration after migrations
+  const resultAfterMigrations = (await resultsCollection
     .orderBy('installed_rank', 'desc')
     .limit(1)
     .get()) as QuerySnapshot<IMigrationResult>;
