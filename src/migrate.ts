@@ -63,14 +63,15 @@ export const migrate = async ({
   let files = await getMigrationFiles(dir);
 
   stats.scannedFiles = files.length;
-  logger.debug(
-    `Found ${stats.scannedFiles} migration file${
-      stats.scannedFiles === 1 ? '' : 's'
-    } at "${dir}"`,
-  );
 
   if (stats.scannedFiles === 0) {
     logger.log(`No migration files found at "${dir}"`);
+  } else {
+    logger.debug(
+      `Found ${stats.scannedFiles} migration file${
+        stats.scannedFiles === 1 ? '' : 's'
+      } at "${dir}"`,
+    );
   }
 
   if (dryRun) {
@@ -156,12 +157,12 @@ export const migrate = async ({
     logger.log(
       `Migration files found: ${scannedFiles}, executed: ${executedFiles}`,
     );
-    if (executedFiles > 0) {
+    if (executedFiles === 0) {
+      logger.log(`Database is up to date`);
+    } else {
       logger.log(
         `Docs added: ${added}, created: ${created}, updated: ${updated}, set: ${set}, deleted: ${deleted}`,
       );
-    } else {
-      logger.log(`Database is up to date`);
     }
   }
 
