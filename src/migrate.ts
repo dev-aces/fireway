@@ -39,15 +39,14 @@ export const migrate = async ({
     app = initializeApp();
   }
 
+  const projectId = app.options.projectId ?? process?.env?.GCLOUD_PROJECT;
   // Create a new instance of Firestore, so we can override WriteBatch prototypes
   const firestore = new Firestore({
-    projectId: app.options.projectId,
+    projectId,
   });
 
   logger.log(
-    `Running @dev-aces/fireway migrations for projectId: ${
-      app.options.projectId ?? ''
-    }`,
+    `Running @dev-aces/fireway migrations for projectId: ${projectId ?? ''}`,
   );
 
   const stats: IStatistics = {
