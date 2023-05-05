@@ -1,6 +1,6 @@
 {
   "name": "@dev-aces/fireway",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A schema migration tool for Firestore",
   "types": "lib/index.d.ts",
   "keywords": [
@@ -34,7 +34,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "npm test"
+      "pre-push": "npm run build && run npm test"
     }
   },
   "peerDependencies": {

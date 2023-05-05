@@ -44,7 +44,11 @@ export const migrate = async ({
     projectId: app.options.projectId,
   });
 
-  logger.log(`Running migrations for projectId: ${app.options.projectId ?? ''}`);
+  logger.log(
+    `Running @dev-aces/fireway migrations for projectId: ${
+      app.options.projectId ?? ''
+    }`,
+  );
 
   const stats: IStatistics = {
     scannedFiles: 0,
@@ -59,11 +63,16 @@ export const migrate = async ({
   let files = await getMigrationFiles(dir);
 
   stats.scannedFiles = files.length;
-  logger.log(
+  logger.debug(
     `Found ${stats.scannedFiles} migration file${
       stats.scannedFiles === 1 ? '' : 's'
     } at "${dir}"`,
   );
+
+  if (stats.scannedFiles === 0) {
+    logger.log(`No migration files found at "${dir}"`);
+  }
+
   if (dryRun) {
     logger.log(`Dry run mode, no records will be touched`);
   }
@@ -112,7 +121,7 @@ export const migrate = async ({
   // Execute them in order
   for (const file of targetFiles) {
     stats.executedFiles += 1;
-    logger.debug(`Running "${file.filename}"`, file.filename);
+    logger.log(`Running "${file.filename}"`, file.filename);
 
     installed_rank += 1;
 
@@ -142,11 +151,33 @@ export const migrate = async ({
 
   const { scannedFiles, executedFiles, added, created, updated, set, deleted } =
     stats;
-  logger.log('Finished all firestore migrations');
-  logger.log(`Files scanned: ${scannedFiles}, executed: ${executedFiles}`);
-  if (executedFiles > 0) {
+
+  if (scannedFiles > 0) {
     logger.log(
-      `Docs added: ${added}, created: ${created}, updated: ${updated}, set: ${set}, deleted: ${deleted}`,
+      `Migration files found: ${scannedFiles}, executed: ${executedFiles}`,
+    );
+    if (executedFiles > 0) {
+      logger.log(
+        `Docs added: ${added}, created: ${created}, updated: ${updated}, set: ${set}, deleted: ${deleted}`,
+      );
+    } else {
+      logger.log(`Database is up to date`);
+    }
+  }
+
+  // Get the latest migration
+  const resultAfterMigrations = (await firestore
+    .collection(collection)
+    .orderBy('installed_rank', 'desc')
+    .limit(1)
+    .get()) as QuerySnapshot<IMigrationResult>;
+
+  const [latestDocAfterMigration] = resultAfterMigrations.docs;
+  const latestMigration = latestDocAfterMigration?.data();
+
+  if (latestMigration) {
+    logger.log(
+      `Current Firestore version: ${latestMigration.version} (${latestMigration.description})`,
     );
   }
 
