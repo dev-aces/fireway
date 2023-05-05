@@ -10,7 +10,7 @@ import { IStatistics } from './types/IStatistics';
 import { proxyWritableMethods } from './proxyWritableMethods';
 import { migrateScript } from './migrateScript';
 
-interface MigrateProps {
+export interface MigrateProps {
   path: string;
   collection?: string;
   dryRun?: boolean;
@@ -65,17 +65,18 @@ export const migrate = async ({
   stats.scannedFiles = files.length;
 
   if (stats.scannedFiles === 0) {
-    logger.log(`No migration files found at "${dir}"`);
+    logger.log(`No migration files found at "${dir}".`);
+    return stats;
   } else {
     logger.debug(
       `Found ${stats.scannedFiles} migration file${
         stats.scannedFiles === 1 ? '' : 's'
-      } at "${dir}"`,
+      } at "${dir}".`,
     );
   }
 
   if (dryRun) {
-    logger.log(`Dry run mode, no records will be touched`);
+    logger.log(`Dry run mode, no records will be touched.`);
   }
 
   // Extend Firestore instance with the "stats" field,
@@ -108,11 +109,13 @@ export const migrate = async ({
   // Sort them by semver
   targetFiles.sort((f1, f2) => semver.compare(f1.version, f2.version) ?? 0);
 
-  logger.log(
-    `Executing ${targetFiles.length} migration file${
-      targetFiles.length === 1 ? '' : 's'
-    } at "${dir}"`,
-  );
+  if (targetFiles.length > 0) {
+    logger.log(
+      `Migrating ${targetFiles.length} new file${
+        targetFiles.length === 1 ? '' : 's'
+      }.`,
+    );
+  }
 
   let installed_rank = -1;
   if (latest) {
@@ -122,7 +125,7 @@ export const migrate = async ({
   // Execute them in order
   for (const file of targetFiles) {
     stats.executedFiles += 1;
-    logger.log(`Running "${file.filename}"`, file.filename);
+    logger.log(`Executing "${file.filename}"`);
 
     installed_rank += 1;
 
@@ -154,21 +157,17 @@ export const migrate = async ({
     stats;
 
   if (scannedFiles > 0) {
-    logger.log(
-      `Migration files found: ${scannedFiles}, executed: ${executedFiles}`,
-    );
     if (executedFiles === 0) {
-      logger.log(`Database is up to date`);
+      logger.log(`Database is up to date.`);
     } else {
       logger.log(
-        `Docs added: ${added}, created: ${created}, updated: ${updated}, set: ${set}, deleted: ${deleted}`,
+        `Docs added: ${added}, created: ${created}, updated: ${updated}, set: ${set}, deleted: ${deleted}.`,
       );
     }
   }
 
-  // Get the latest migration
-  const resultAfterMigrations = (await firestore
-    .collection(collection)
+  // Get the latest migration after migrations
+  const resultAfterMigrations = (await resultsCollection
     .orderBy('installed_rank', 'desc')
     .limit(1)
     .get()) as QuerySnapshot<IMigrationResult>;
