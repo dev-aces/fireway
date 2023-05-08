@@ -20,3 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - If a migration has failed, the next cli execution with re-run that migration. The forked repository just stopped with an error message.
 - Rewrote JavaScript code (except tests) to TypeScript. Introduced a function per file instead of one huge file.
 - Removed a complex NodeJS code that tried to calculate hanged async migration tasks.
+- Updated Firebase libraries to the latest versions.
+
+### Fixed
+- Added Firebase libraries as peer dependencies
