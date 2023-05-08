@@ -23,4 +23,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Firebase libraries to the latest versions.
 
 ### Fixed
+
 - Added Firebase libraries as peer dependencies
