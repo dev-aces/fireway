@@ -30,11 +30,11 @@
     "test-runner": "node tests",
     "pretest": "mkdir -p tests/emptyMigration",
     "test": "GCLOUD_PROJECT=test FIRESTORE_EMULATOR_HOST=0.0.0.0:8181 start-test emulator tcp:8181 test-runner",
-    "release": "yarn test && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm login && npm publish"
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "husky": {
     "hooks": {
-      "pre-push": "npm run build && npm test"
+      "pre-push": "npm run format && npm run build && npm test"
     }
   },
   "peerDependencies": {
