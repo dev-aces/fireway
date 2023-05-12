@@ -1,3 +1,3 @@
 export async function migrate() {
-    setTimeout(() => {}, 1000);
-};
+  setTimeout(() => {}, 1000);
+}

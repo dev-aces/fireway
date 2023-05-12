@@ -1,7 +1,7 @@
-import { existsSync, promises } from "fs";
-import path from "path";
-import semver from "semver";
-import { IMigrationFileMeta } from "./types/IMigrationFileMeta";
+import { existsSync, promises } from 'fs';
+import path from 'path';
+import semver from 'semver';
+import { IMigrationFileMeta } from './types/IMigrationFileMeta';
 
 export const getMigrationFiles = async (dir: string) => {
   // Get all the scripts
@@ -26,15 +26,15 @@ export const getMigrationFiles = async (dir: string) => {
   const files = filenames
     .map((filename) => {
       // Skip files that start with a dot
-      if (filename[0] === ".") return null;
+      if (filename[0] === '.') return null;
 
-      const [filenameVersion, description] = filename.split("__");
+      const [filenameVersion, description] = filename.split('__');
       const coerced = semver.coerce(filenameVersion);
 
       if (!coerced) {
         if (description) {
           throw new Error(
-            `This filename doesn't match the required format 'v0.0.0__description', please provide semver for: ${filename}`
+            `This filename doesn't match the required format 'v0.0.0__description', please provide semver for: ${filename}`,
           );
         }
         return null;
@@ -43,7 +43,7 @@ export const getMigrationFiles = async (dir: string) => {
       // If there's a version, but no description, we have an issue
       if (!description) {
         throw new Error(
-          `This filename doesn't match the required format 'v0.0.0__description', please provide description for: ${filename}`
+          `This filename doesn't match the required format 'v0.0.0__description', please provide description for: ${filename}`,
         );
       }
 
@@ -52,7 +52,7 @@ export const getMigrationFiles = async (dir: string) => {
       const existingFile = versionToFile.get(version);
       if (existingFile) {
         throw new Error(
-          `Both ${filename} and ${existingFile} have the same version`
+          `Both ${filename} and ${existingFile} have the same version`,
         );
       }
 

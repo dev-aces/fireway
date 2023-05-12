@@ -1,5 +1,5 @@
 export async function migrate() {
-    (async () => {
-        throw new Error('Some error');
-    })();
-};
+  (async () => {
+    throw new Error('Some error');
+  })();
+}

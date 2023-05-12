@@ -223,7 +223,7 @@ Options
   --logLevel       Log level, options: debug, log, warn, error (default "log")
   -v, --version    Displays current version
   -h, --help       Displays this message
-````
+```
 
 ## Contributing
 
